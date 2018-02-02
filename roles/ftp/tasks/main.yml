@@ -1,0 +1,8 @@
+---
+
+- name: Upload FTP files
+  copy:
+    src: files/ 
+    dest: "{{ ftp_dir }}" 
+    remote_src: yes
+    directory_mode: yes
