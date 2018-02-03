@@ -1,0 +1,25 @@
+---
+# install requirements and git repo
+- name: install requirements
+  apt: 
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ packages }}"
+
+- name: install ssh-key
+  copy:
+    src: "{{ role_path }}/config/id_rsa"
+    dest: "/root/.ssh/id_rsa"
+    mode: 0600
+    owner: root
+
+- name: clone git repo
+  git:
+    repo: "{{ git_repo }}"
+    dest: "{{ app_dir }}"
+    accept_hostkey: yes
+
+- name: install required python packages
+  pip:
+    requirements: "{{ app_dir }}/requirements.txt"
+

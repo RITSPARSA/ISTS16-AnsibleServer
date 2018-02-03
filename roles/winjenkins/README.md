@@ -1,38 +1,74 @@
-Role Name
-=========
+# Ansible Role: Jenkins CI for Windows
 
-A brief description of the role goes here.
+Installs Jenkins CI on windows servers.
 
-Requirements
-------------
+## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Requires `curl` and `Java` to be installed on the server.
 
-Role Variables
---------------
+## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-Dependencies
-------------
+    jenkins_hostname: localhost
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+The system hostname; usually `localhost` works fine. This will be used during setup to communicate with the running Jenkins instance via HTTP requests.
 
-Example Playbook
-----------------
+    jenkins_home: C:\program files\jenkins
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+The Jenkins home directory which, amongst others, is being used for storing artifacts, workspaces and plugins. This variable allows you to override the default `C:\program files\jenkins` location.
 
-    - hosts: servers
+    jenkins_http_port: 8080
+
+The HTTP port for Jenkins' web interface.
+
+    jenkins_admin_username: admin
+    jenkins_admin_password: admin
+
+Default admin account credentials which will be created the first time Jenkins is installed.
+
+    jenkins_admin_password_file: ""
+
+Default admin password file which will be created the first time Jenkins is installed as C:\program files\jenkins\secrets\initialAdminPassword
+
+    jenkins_jar_location: $env:TEMP/jenkins-cli.jar
+
+The location at which the `jenkins-cli.jar` jarfile will be kept. This is used for communicating with Jenkins via the CLI.
+
+    jenkins_plugins: []
+
+List of Jenkins plugins to be installed automatically during provisioning. (_Note_: This feature is currently undergoing some changes due to the `jenkins-cli` authentication changes in Jenkins 2.0, and may not work as expected.)
+
+    jenkins_connection_delay: 5
+    jenkins_connection_retries: 60
+
+Amount of time and number of times to wait when connecting to Jenkins after initial startup, to verify that Jenkins is running. Total time to wait = `delay` * `retries`, so by default this role will wait up to 300 seconds before timing out.
+
+    jenkins_java_options: "-Djenkins.install.runSetupWizard=false"
+
+Extra Java options for the Jenkins launch command configured in the init file can be set with the var `jenkins_java_options`. By default the option to disable the Jenkins 2.0 setup wizard is added.
+
+    jenkins_init_changes:
+      - option: "JENKINS_ARGS"
+        value: "--prefix={{ jenkins_url_prefix }}"
+      - option: "JENKINS_JAVA_OPTIONS"
+        value: "{{ jenkins_java_options }}"
+
+Changes made to the Jenkins init script; the default set of changes set the configured URL prefix and add in configured Java options for Jenkins' startup. You can add other option/value pairs if you need to set other options for the Jenkins init file.
+
+
+## Example Playbook
+
+    - hosts: ci-server
+      vars:
+        jenkins_hostname: jenkins.example.com
       roles:
-         - { role: username.rolename, x: 42 }
+        - sirdy.win_jenkins
 
-License
--------
+## License
 
-BSD
+GNU
 
-Author Information
-------------------
+## Author Information
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role was inspired by the linux role created by geerlingguy. 
