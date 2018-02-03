@@ -6,6 +6,7 @@
 - hosts: FreeBSD
   roles:
     - jenkinsbsd-predeploy
+  tags: jenkins
 
 - hosts: all
   roles:
@@ -14,6 +15,7 @@
 - hosts: Ubuntu
   roles:
     - ecommerce-predeploy
+  tags: ecommerce
 
 - hosts: FreeBSD
   roles:
@@ -22,9 +24,9 @@
 - hosts: WindowsJenkins
   roles:
     - jenkinswin-predeploy
+  tags: jenkinswin
 
 - hosts: WindowsMail
   roles:
     - mail-predeploy
-
-
+  tags: mail
